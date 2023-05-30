@@ -1,53 +1,53 @@
 import logo from "./logo.svg";
 import "./App.css";
 import { useEffect, useState } from "react";
+import { SearchBar } from "./SearchBar";
 
-// const [cards, getCards] = useState('')
-
-const getCards = (card) =>
+export const getCards = (card) =>
   fetch(`http://localhost:3001/scryfall-card/${card}`)
-    .then((res) => console.log(`res is ${res.data}`))
+    // get it
+    .then((res) => {
+      // read it
+      res.json().then((body) => {
+        console.log(body[0]);
+      });
+    })
     .catch((err) => console.log(`error! ${err}`));
 
-const SearchBar = (props) => {
-  const [searchTerm, setSearchTerm] = useState("Sol Ring");
-  const handleChange = (e) => {
-    console.log("e is " + e.target.value);
-    setSearchTerm(e.target.value);
-  };
+const SearchResult = (props) => {
+
+  const [result, setResult] = useState({ name: "testing", id: "id" });
+
+  useEffect(() => {
+    console.log("using effect");
+    fetch(`http://localhost:3001/scryfall-card/${props.query}`)
+      // get it
+      .then((res) => {
+        // read it
+        res.json().then((body) => {
+          console.log(body);
+          body.forEach((i) => console.log(i.name));
+          setResult(body[0]);
+        });
+      })
+      .catch((err) => console.log(`error! ${err}`));
+  }, [result]);
 
   return (
     <div>
-      <input
-        type="text"
-        placeholder="Search Here"
-        onChange={handleChange}
-        value={searchTerm}
-      />
-      <button onClick={()=>{getCards(searchTerm)}}>Search</button>
+      <p>{result.name}</p>
+      <p>{result.id}</p>
     </div>
   );
 };
 
 function App() {
-  useEffect(() => {
-    getCards();
-  }, []);
-
   return (
     <div className="App">
       <header className="App-header">
         <img src="../Magic_card_back.webp" className="App-logo" alt="logo" />
-        <p>Magic the Gathering Collection Manager under construction.</p>
-        <SearchBar searchTerm="test" />
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+        <SearchBar />
+        <SearchResult query="Thrashing" />
       </header>
     </div>
   );

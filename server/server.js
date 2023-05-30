@@ -39,23 +39,24 @@ const basicCardDetailsProjection = {
   set_name: 1,
   color_identiy: 1,
   keywords: 1,
-  image_uris:1,
-  prices: 1
+  image_uris: 1,
+  prices: 1,
 };
 
 app.get("/scryfall-card/:name", async (req, res) => {
-  console.log(req.params.name)
+  console.log(req.params.name);
   let mongoQuery = {};
   mongoQuery.name = {
     $regex: req.params.name,
     $options: "i",
   };
   try {
-    console.log(mongoQuery)
+    console.log(mongoQuery);
     let cards = await cardCollection
       .find(mongoQuery, { projection: basicCardDetailsProjection })
       .toArray();
-    res.send(cards);
+    console.log(cards);
+    res.json(cards);
   } catch (err) {
     console.log(err);
     res.sendStatus(500);
