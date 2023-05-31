@@ -17,6 +17,7 @@
 .App-header {
   background-color: #282c34;
   min-height: 100vh;
+  font-family: monospace;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -27,6 +28,33 @@
 
 .App-link {
   color: #61dafb;
+}
+.Search-Bar {
+  width: 75vw;
+  font-size: 3vw;
+  padding: 1vw;
+  font-family: monospace;
+  background-color: ivory;
+  margin: 2vw;
+}
+
+.Search-Button {
+  font-size: 3vw;
+  padding: 1vw;
+  font-family: monospace;
+  background-color: ivory;
+}
+.Search-Result {
+  font-size: 2vw;
+}
+
+.Search-Result img {
+  width: 25vw;
+}
+
+.Search-Results {
+  display: grid;
+  grid-template-columns: 30vw 30vw 30vw;
 }
 
 @keyframes App-logo-spin {
