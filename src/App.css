@@ -5,6 +5,7 @@
 .App-logo {
   height: 40vmin;
   pointer-events: none;
+  border-radius: 7vw;
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -50,6 +51,7 @@
 
 .Search-Result img {
   width: 25vw;
+  border-radius: 2vw;
 }
 
 .Search-Results {

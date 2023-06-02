@@ -3,6 +3,8 @@ const cors = require("cors");
 const app = express();
 const port = 3001;
 const { MongoClient } = require("mongodb");
+const basicCardDetailsProjection = require("../CardDetailsProjection");
+const { getCardsThatCostAtLeast } = require("./controller");
 
 // cors
 app.use(cors({ origin: true, credentials: true }));
@@ -26,23 +28,6 @@ app.get("/", (req, res) => {
   res.send("Hello World!");
 });
 
-// TODO: Move to own file
-const basicCardDetailsProjection = {
-  name: 1,
-  type_line: 1,
-  cmc: 1,
-  colors: 1,
-  rarity: 1,
-  power: 1,
-  toughness: 1,
-  oracle_text: 1,
-  set_name: 1,
-  color_identiy: 1,
-  keywords: 1,
-  image_uris: 1,
-  prices: 1,
-};
-
 app.get("/scryfall-card/:name", async (req, res) => {
   console.log(req.params.name);
   let mongoQuery = {};
@@ -56,6 +41,22 @@ app.get("/scryfall-card/:name", async (req, res) => {
       .find(mongoQuery, { projection: basicCardDetailsProjection })
       .toArray();
     console.log(cards);
+    res.json(cards);
+  } catch (err) {
+    console.log(err);
+    res.sendStatus(500);
+  }
+});
+
+app.get("/prices", async (req, res) => {
+  console.log(`request is`);
+  console.log(req.query);
+  try {
+    const cards = await cardCollection
+      .find({
+        historicalPrices: { $elemMatch: { "price.usd": { $gt: parseInt(req.query.minPrice)} } },
+      }, {projection: basicCardDetailsProjection })
+      .toArray();
     res.json(cards);
   } catch (err) {
     console.log(err);
