@@ -5,8 +5,10 @@ export const SearchResult = (props) => {
       <div>
         <p>{props.name}</p>
         <p>${props.price}</p>
+        <a href={props.scryfall_uri} target="_blank" rel="noopener noreferrer">
+          Scryfall
+        </a>
       </div>
     </div>
   );
 };
-

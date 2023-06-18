@@ -7,8 +7,8 @@ function App() {
     <div className="App">
       <header className="App-header">
         <img src="../Magic_card_back.webp" className="App-logo" alt="logo" />
-        <Search />
       </header>
+      <Search />
     </div>
   );
 }

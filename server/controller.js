@@ -1,3 +1,49 @@
+const updateAllPrices = async (cardCollection) => {
+  console.log("calling update")
+  const cards = await cardCollection.find().toArray();
+  console.log("cards is")
+  console.log(cards)
+  for (const i in cards) {
+    // todo get scryfall price using id
+    await sleep(100);
+    const res = await fetch(`https://api.scryfall.com/cards/${cards[i]._id}`);
+    const scryfallCardResponse = await res.json();
+    if (scryfallCardResponse.prices) {
+      console.log(
+        `prices for ${scryfallCardResponse.name}:\n ${JSON.stringify(
+          scryfallCardResponse.prices
+        )}\n`
+      );
+
+      const prices= new Prices(
+        parseFloat(scryfallCardResponse.prices?.usd),
+        parseFloat(scryfallCardResponse.prices?.usdFoil),
+        parseFloat(scryfallCardResponse.prices?.eur),
+        parseFloat(scryfallCardResponse.prices?.eurFoil),
+        parseFloat(scryfallCardResponse.prices?.tix)
+      );
+      const updateResponse = await cardCollection.updateOne(
+        { _id: cards[i]._id },
+        {
+          $push: {
+            historicalPrices: {
+              date: new Date(),
+              price: prices,
+            },
+          },
+        }
+      );
+
+      console.log(
+        `updated: \n${JSON.stringify(updateResponse)}\n${
+          scryfallCardResponse.name
+        } is now ${JSON.stringify(scryfallCardResponse.prices)}`
+      );
+    } else {
+      console.log(`NO PRICES FOR ${scryfallCardResponse.name}`);
+    }
+  }
+}
 // import { Card, PricesResponse, Prices } from "../types/ScryfallCard.ts";
 // import { basicCardDetailsProjection } from "../util/queryProjections.ts";
 // import { sleep } from "../util/mapper.ts";
@@ -111,47 +157,3 @@ const getCardsThatCostAtLeast = async (price) => {
 //     console.log(err);
 //   }
 // };
-
-// async function updateAllPrices() {
-//   const cards = await cardCollection.find().toArray();
-//   for (const i in cards) {
-//     // todo get scryfall price using id
-//     await sleep(100);
-//     const res = await fetch(`https://api.scryfall.com/cards/${cards[i]._id}`);
-//     const scryfallCardResponse = await res.json();
-//     if (scryfallCardResponse.prices) {
-//       console.log(
-//         `prices for ${scryfallCardResponse.name}:\n ${JSON.stringify(
-//           scryfallCardResponse.prices
-//         )}\n`
-//       );
-
-//       const prices= new Prices(
-//         parseFloat(scryfallCardResponse.prices?.usd),
-//         parseFloat(scryfallCardResponse.prices?.usdFoil),
-//         parseFloat(scryfallCardResponse.prices?.eur),
-//         parseFloat(scryfallCardResponse.prices?.eurFoil),
-//         parseFloat(scryfallCardResponse.prices?.tix)
-//       );
-//       const updateResponse = await cardCollection.updateOne(
-//         { _id: cards[i]._id },
-//         {
-//           $push: {
-//             historicalPrices: {
-//               date: new Date(),
-//               price: prices,
-//             },
-//           },
-//         }
-//       );
-
-//       console.log(
-//         `updated: \n${JSON.stringify(updateResponse)}\n${
-//           scryfallCardResponse.name
-//         } is now ${JSON.stringify(scryfallCardResponse.prices)}`
-//       );
-//     } else {
-//       console.log("NO PRICES FOR " + scryfallCardResponse.name);
-//     }
-//   }
-// }

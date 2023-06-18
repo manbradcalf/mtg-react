@@ -16,7 +16,7 @@ export const Search = () => {
     fetch(`http://localhost:3001/prices?minPrice=${price}`)
       .then((res) => {
         res.json().then((body) => {
-          console.log(cards.map(x=>x.name))
+          console.log(cards);
           handleCards(body);
         });
       })
@@ -25,7 +25,7 @@ export const Search = () => {
   const [cards, setCards] = useState([]);
 
   function handleCards(result) {
-    console.log(result)
+    console.log(`handling ${result}`);
     setCards(result);
   }
 
@@ -41,6 +41,7 @@ export const Search = () => {
 
   return (
     <div>
+      <div>
       <input
         className="Search-Bar"
         type="text"
@@ -56,7 +57,8 @@ export const Search = () => {
       >
         Search by Name
       </button>
-
+      </div>
+      <div>
       <input
         className="Search-Bar"
         type="text"
@@ -72,13 +74,14 @@ export const Search = () => {
       >
         Search by Price
       </button>
-
+      </div>
       <div className="Search-Results">
         {cards.map((card) => (
           <SearchResult
             name={card.name}
             image_uri={card.image_uris?.normal || "../Magic_card_back.webp"}
-            price={card.prices?.usd}
+            price={card.historicalPrices.slice(-1)[0].price?.usd}
+            scryfall_uri={card.scryfall_uri}
           />
         ))}
       </div>
