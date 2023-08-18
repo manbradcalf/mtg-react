@@ -2,8 +2,10 @@ const express = require("express");
 const cors = require("cors");
 const app = express();
 const port = 3001;
-const { MongoClient } = require("mongodb");
 const basicCardDetailsProjection = require("../CardDetailsProjection");
+const Card = require("./card-model");
+
+require("../mongo").connect();
 
 // cors
 app.use(cors({ origin: true, credentials: true }));
@@ -11,18 +13,20 @@ app.use(cors({ origin: true, credentials: true }));
 // Init Middleware
 app.use(express.json({ extended: false }));
 
-// Connection URL
-const url = "mongodb://localhost:27017";
-const client = new MongoClient(url);
-const dbName = "mtg-collection";
-// Use connect method to connect to the server
-
-client.connect();
-
+// Connect to Azure Mongo CosmosDB
 console.log("Connected successfully to server");
-const db = client.db(dbName);
-const cardCollection = db.collection("cardstwo");
 
+app.post("/", (req, res) => {
+  console.log(req.body);
+  const { id, name } = req.body;
+  const card = new Card({ id, name });
+  card
+    .save()
+    .then(() => {
+      res.json(card);
+    })
+    .catch((e) => console.log(e));
+});
 app.get("/", (req, res) => {
   res.send("Hello World!");
 });
@@ -66,7 +70,6 @@ app.get("/prices", async (req, res) => {
   }
 });
 
-
 // TODO: Move
 const sleep = (millis) => {
   return new Promise((resolve) => setTimeout(resolve, millis));
@@ -77,7 +80,7 @@ class Prices {
     this.usd = usd;
     this.usdFoil = usdFoil;
     this.number = number;
-    this.eurFoil = eurFoil; 
+    this.eurFoil = eurFoil;
     this.tix = tix;
   }
 }
