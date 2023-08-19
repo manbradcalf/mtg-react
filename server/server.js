@@ -4,6 +4,7 @@ const app = express();
 const port = 3001;
 const basicCardDetailsProjection = require("../CardDetailsProjection");
 const Card = require("./card-model");
+const Another = require("./another-model");
 
 require("../mongo").connect();
 
@@ -16,7 +17,8 @@ app.use(express.json({ extended: false }));
 // Connect to Azure Mongo CosmosDB
 console.log("Connected successfully to server");
 
-app.post("/", (req, res) => {
+// todo: move to router
+app.post("/card", (req, res) => {
   console.log(req.body);
   const { id, name } = req.body;
   const card = new Card({ id, name });
@@ -27,6 +29,45 @@ app.post("/", (req, res) => {
     })
     .catch((e) => console.log(e));
 });
+
+app.post("/another", (req, res) => {
+  console.log(req.body);
+  const { favoriteNumber, funnyjoke } = req.body;
+  const another = new Another({ favoriteNumber, funnyjoke });
+  another
+    .save()
+    .then(() => {
+      res.json(another);
+    })
+    .catch((e) => console.log(e));
+});
+
+app.get("/another", (req, res) => {
+  const docquery = Another.find({
+    // mongo query goes here
+  }).read(require("mongodb").ReadPreference.NEAREST);
+  docquery
+    .exec()
+    .then((x) => {
+      res.json(x);
+    })
+    .catch((e) => res.status(500).send(err));
+});
+
+app.get("/another/:id", (req, res) => {
+  const readPref = require("mongodb").ReadPreference.NEAREST;
+  const docquery = Another.findOne({ _id: req.params.id }).read(readPref);
+
+  docquery
+    .exec()
+    .then((x) => {
+      res.json(x);
+    })
+    .catch((e) => {
+      res.status(500).send(e);
+    });
+});
+
 app.get("/", (req, res) => {
   res.send("Hello World!");
 });
